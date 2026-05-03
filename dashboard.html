@@ -231,7 +231,7 @@ async function load() {
     d = EMBEDDED_DATA;
   } else {
     try {
-      const r = await fetch('budget-data.json');
+      const r = await fetch('budget-data.json?t=' + Date.now(), {cache: 'no-store'});
       d = await r.json();
     } catch {
       // 网络失败 → 尝试从 localStorage 恢复
