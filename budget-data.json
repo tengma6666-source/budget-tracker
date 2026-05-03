@@ -40,6 +40,12 @@
       "category": "个人爱好",
       "amount": 525,
       "note": "日常消费"
+    },
+    {
+      "category": "个人爱好",
+      "amount": 1,
+      "date": "2026-05-04",
+      "note": "测试"
     }
   ]
 }
