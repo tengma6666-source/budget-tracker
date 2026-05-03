@@ -208,6 +208,6 @@ txnsEl.innerHTML = recent.length ? recent.map(e => {
 HTML_BODY
 
 # 替换 JSON 占位符
-sed -i '' "s|JSON_DATA_PLACEHOLDER|$(echo "$DATA_JSON" | python3 -c "import json,sys; print(json.dumps(json.load(sys.stdin)))")|g" "$OUTPUT_FILE"
+sed -i '' "s|JSON_DATA_PLACEHOLDER|$(echo "$DATA_JSON" | python3 -c "import json,sys; print(json.dumps(json.load(sys.stdin), ensure_ascii=False))")|g" "$OUTPUT_FILE"
 
 echo "✅ dashboard 构建完成: $OUTPUT_FILE"
