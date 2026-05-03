@@ -11,9 +11,11 @@
 | 工作目录 | `~/.openclaw/workspace/budget-tracker/` |
 | 数据文件 | `budget-data.json` |
 | 参考配置 | `budget-config-reference.json`（只读，不可覆盖） |
-| Dashboard | `http://localhost:8765/dashboard.html` |
+| 本地看板 | `http://localhost:8765/dashboard.html` |
+| 外网看板 | `https://tengma6666-source.github.io/budget-tracker/` |
 | 早报截图 | `budget_morning_report.png` |
-| 操作日志 | `budget-ops.log.md`（append-only） |
+| 完整同步脚本 | `sync_and_report.sh` |
+| GitHub 仓库 | `tengma6666-source/budget-tracker` |
 
 ---
 
@@ -87,19 +89,23 @@ python3 ~/.openclaw/workspace/budget-tracker/budget.py reset
 每次与马腾沟通预算/记账时，**必须同时发送**：
 
 1. **文字总结**：`budget.py status` 的输出
-2. **Dashboard 截图**：发送到飞书（路径：`~/.openclaw/workspace/budget-tracker/budget_morning_report.png`）
-3. **应用地址**：`http://localhost:8765/dashboard.html`
+2. **Dashboard 截图**：发送到微信（路径：`~/.openclaw/workspace/budget-tracker/budget_morning_report.png`）
+3. **外网链接**：`https://tengma6666-source.github.io/budget-tracker/`
 
 发送命令：
 ```bash
-# 先截图
+# 完整流程（一键）：push 数据 → rebuild → 生成截图 → 发微信截图 → 发链接
+bash ~/.openclaw/workspace/budget-tracker/sync_and_report.sh
+
+# 或者分步执行：
+# 1. 截图
 python3 ~/.openclaw/workspace/budget-tracker/generate_report.py
 
-# 飞书发送截图（文件路径必须在 workspace 内）
-message send channel=feishu media="~/.openclaw/workspace/budget-tracker/budget_morning_report.png" target="user:ou_56ced34a3b833734c27c9cfd1c005b9c"
+# 2. 微信发送截图
+openclaw message send --channel weixin --target "o9cq807y9_YjdqyRBW1R1-TyBnfc@im.wechat" --file "~/.openclaw/workspace/budget-tracker/budget_morning_report.png"
 
-# 飞书发送文字摘要
-message send channel=feishu message="📊 预算状态\n总预算：¥10,000\n已消耗：¥1,998\n剩余：¥6,002（消耗25%）" target="user:ou_56ced34a3b833734c27c9cfd1c005b9c"
+# 3. 微信发送链接
+openclaw message send --channel weixin --target "o9cq807y9_YjdqyRBW1R1-TyBnfc@im.wechat" --message "🌐 外网看板：https://tengma6666-source.github.io/budget-tracker/"
 ```
 
 ---
