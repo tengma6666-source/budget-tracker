@@ -207,7 +207,21 @@ txnsEl.innerHTML = recent.length ? recent.map(e => {
 </html>
 HTML_BODY
 
-# 替换 JSON 占位符
-sed -i '' "s|JSON_DATA_PLACEHOLDER|$(echo "$DATA_JSON" | python3 -c "import json,sys; print(json.dumps(json.load(sys.stdin), ensure_ascii=False))")|g" "$OUTPUT_FILE"
+# 替换 JSON 占位符（Python 避免 sed 命令行长度的 shell 限制）
+python3 - << 'PYEOF'
+import json
+
+with open("index.html", "r", encoding="utf-8") as f:
+    html = f.read()
+
+with open("budget-data.json", "r", encoding="utf-8") as f:
+    data = json.load(f)
+
+json_str = json.dumps(data, ensure_ascii=False)
+html = html.replace("JSON_DATA_PLACEHOLDER", json_str)
+
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html)
+PYEOF
 
 echo "✅ dashboard 构建完成: $OUTPUT_FILE"
