@@ -1,0 +1,6 @@
+*.png
+*.jpg
+*.jpeg
+*.pyc
+__pycache__/
+backups/
