@@ -23,10 +23,13 @@ jobs:
       - name: Build dashboard
         run: bash build_dashboard.sh
 
+      - name: Setup Pages artifact
+        run: mkdir -p _site && mv index.html _site/
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'index.html'
+          path: '_site'
 
       - name: Deploy to GitHub Pages
         id: deployment
