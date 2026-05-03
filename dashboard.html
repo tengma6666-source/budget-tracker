@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>小马哥月度预算</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #0a0a14;
+    color: #fff;
+    width: 100%;
+    max-width: 750px;
+    margin: 0 auto;
+    padding: 0 0 40px;
+  }
+
+  /* ── 顶部标题 ── */
+  .header {
+    background: #0d0d1f;
+    padding: 20px 24px;
+    border-bottom: 1px solid #1c1c38;
+  }
+  .header-title { font-size: 20px; font-weight: 700; color: #fff; }
+  .header-sub { font-size: 12px; color: #555; margin-top: 4px; }
+
+  /* ── Hero 总览 ── */
+  .hero {
+    background: #12122a;
+    margin: 16px;
+    border-radius: 20px;
+    padding: 24px 20px;
+  }
+  .hero-top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .ring-wrap { text-align: center; flex-shrink: 0; }
+  .ring-svg { width: 110px; height: 110px; display: block; }
+  .ring-label { font-size: 10px; color: #555; margin-top: 4px; letter-spacing: 1px; }
+  .hero-info { flex: 1; }
+  .hero-remain {
+    font-size: 34px;
+    font-weight: 700;
+    color: #4ade80;
+    line-height: 1.1;
+  }
+  .hero-remain.over { color: #f87171; }
+  .hero-sub { font-size: 13px; color: #555; margin-top: 6px; }
+  .hero-divider { height: 1px; background: #1c1c38; margin: 0 0 16px; }
+  .hero-stats {
+    display: flex;
+    justify-content: space-between;
+  }
+  .hero-stat { text-align: center; flex: 1; }
+  .hero-stat-label { font-size: 11px; color: #555; margin-bottom: 6px; letter-spacing: 1px; }
+  .hero-stat-value { font-size: 20px; font-weight: 700; }
+  .hero-stat-value.gray { color: #888; }
+  .hero-stat-value.white { color: #fff; }
+  .hero-stat-value.green { color: #4ade80; }
+  .hero-stat-value.red { color: #f87171; }
+
+  /* ── 分类 ── */
+  .section-title {
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 2px;
+    padding: 8px 24px 6px;
+    text-transform: uppercase;
+  }
+  .cat-card {
+    background: #12122a;
+    margin: 0 16px 10px;
+    border-radius: 16px;
+    padding: 16px 18px;
+  }
+  .cat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .cat-left { display: flex; align-items: center; gap: 12px; }
+  .cat-icon-circle {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .cat-name { font-size: 15px; font-weight: 600; color: #ddd; }
+  .cat-limit { font-size: 11px; color: #555; margin-top: 2px; }
+  .cat-right { text-align: right; flex-shrink: 0; margin-left: 8px; }
+  .cat-spent { font-size: 17px; font-weight: 700; color: #fff; }
+  .cat-spent.over { color: #f87171; }
+  .cat-status { font-size: 11px; color: #555; margin-top: 2px; }
+  .progress-bar {
+    width: 100%; height: 6px;
+    background: #1c1c38;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+
+  /* ── 消费记录 ── */
+  .txn-card {
+    background: #12122a;
+    margin: 0 16px 10px;
+    border-radius: 16px;
+    padding: 4px 0;
+  }
+  .txn-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid #1c1c38;
+  }
+  .txn-item:last-child { border-bottom: none; }
+  .txn-left { display: flex; align-items: center; gap: 10px; }
+  .txn-icon { font-size: 18px; }
+  .txn-cat { font-size: 14px; color: #ccc; }
+  .txn-note { font-size: 11px; color: #555; margin-top: 2px; }
+  .txn-right { text-align: right; flex-shrink: 0; }
+  .txn-amount { font-size: 15px; font-weight: 700; color: #fff; }
+  .txn-time { font-size: 10px; color: #555; margin-top: 2px; }
+
+  /* ── 底部 ── */
+  .footer {
+    text-align: center;
+    padding: 24px 16px;
+    font-size: 11px;
+    color: #333;
+  }
+
+  /* ── 通知条 ── */
+  .notice {
+    background: #1a1a3a;
+    margin: 0 16px 12px;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">📊 小马哥月度预算</div>
+  <div class="header-sub" id="headerSub">加载中…</div>
+</div>
+
+<div class="notice">💡 数据每5分钟自动刷新 · 无需网络持续查看</div>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="55" cy="55" r="42" fill="none" stroke="#1c1c38" stroke-width="12"/>
+        <circle id="ringFill" cx="55" cy="55" r="42" fill="none" stroke="#22d3ee"
+          stroke-width="12" stroke-linecap="round"
+          stroke-dasharray="264" stroke-dashoffset="264"
+          transform="rotate(-90 55 55)"/>
+        <text x="55" y="51" text-anchor="middle" fill="white" font-size="20" font-weight="700"
+          font-family="-apple-system,sans-serif" id="ringPctText">--%</text>
+        <text x="55" y="68" text-anchor="middle" fill="#555" font-size="9"
+          font-family="-apple-system,sans-serif">消耗</text>
+      </svg>
+      <div class="ring-label">OVERALL</div>
+    </div>
+    <div class="hero-info">
+      <div class="hero-remain" id="heroRemain">¥--</div>
+      <div class="hero-sub" id="heroSub2">剩余可支配</div>
+    </div>
+  </div>
+  <div class="hero-divider"></div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-label">总预算</div>
+      <div class="hero-stat-value gray" id="heroTotal">¥--</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-label">已消耗</div>
+      <div class="hero-stat-value white" id="heroSpent">¥--</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-label">剩余</div>
+      <div class="hero-stat-value green" id="heroRemStat">¥--</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">📂 预算分类</div>
+<div id="catList"></div>
+
+<div class="section-title" style="margin-top:8px;">🧾 最新消费</div>
+<div class="txn-card" id="txnList"></div>
+
+<div class="footer">
+  🌐 预算追踪器 · ~/.openclaw/workspace/budget-tracker/<br>
+  <span style="color:#222">无需网络 · 本地存储 · 微信友好</span>
+</div>
+
+<script>
+// ── 内嵌数据（直接写入，无网络依赖）─
+const EMBEDDED_DATA = null;  // null = 从文件加载
+
+const CAT_META = {
+  "个人爱好":     { color: "#a78bfa", bg: "#1a1233", icon: "🎮" },
+  "好物购买":     { color: "#22d3ee", bg: "#0d1f24", icon: "🛍️" },
+  "鞋品":         { color: "#f97316", bg: "#1f1308", icon: "👟" },
+  "家庭幸福感好物": { color: "#fb923c", bg: "#1f1408", icon: "🏠" },
+  "餐饮":         { color: "#fbbf24", bg: "#1f1a08", icon: "🍜" },
+  "活动聚会":     { color: "#f472b6", bg: "#1f0c18", icon: "🥂" },
+  "交通":         { color: "#60a5fa", bg: "#0c1020", icon: "🚗" },
+  "其他":         { color: "#6b7280", bg: "#111",    icon: "📦" },
+};
+
+async function load() {
+  let d;
+  if (EMBEDDED_DATA) {
+    d = EMBEDDED_DATA;
+  } else {
+    try {
+      const r = await fetch('budget-data.json');
+      d = await r.json();
+    } catch {
+      // 网络失败 → 尝试从 localStorage 恢复
+      const saved = localStorage.getItem('budget_fallback');
+      if (saved) {
+        d = JSON.parse(saved);
+      } else {
+        document.getElementById('catList').innerHTML =
+          '<div class="cat-card" style="text-align:center;color:#555;padding:30px">数据加载失败<br><small>请确保预算服务正在运行</small></div>';
+        return;
+      }
+    }
+  }
+
+  // 缓存到 localStorage（断网时兜底）
+  try { localStorage.setItem('budget_fallback', JSON.stringify(d)); } catch {}
+
+  const catSpent = {};
+  (d.expenses || []).forEach(e => {
+    catSpent[e.category] = (catSpent[e.category] || 0) + e.amount;
+  });
+
+  const activeCats = (d.categories || []).filter(c => c.limit > 0 || catSpent[c.name] > 0);
+  const totalLimit = activeCats.reduce((s, c) => s + c.limit, 0) || d.totalBudget;
+  const totalSpent = activeCats.reduce((s, c) => s + (catSpent[c.name] || 0), 0);
+  const remaining  = totalLimit - totalSpent;
+  const pct        = totalLimit > 0 ? Math.min(100, Math.round(totalSpent / totalLimit * 100)) : 0;
+
+  // Header
+  const now = new Date();
+  document.getElementById('headerSub').textContent =
+    `${now.getFullYear()}年${now.getMonth()+1}月 · ${(d.expenses||[]).length}笔消费 · 更新于 ${now.toTimeString().slice(0,5)}`;
+
+  // Hero ring
+  const ring = document.getElementById('ringFill');
+  const circ = 2 * Math.PI * 42;
+  ring.style.strokeDasharray  = circ;
+  ring.style.strokeDashoffset = circ * (1 - pct / 100);
+  ring.style.stroke = remaining < 0 ? '#f87171' : '#22d3ee';
+  document.getElementById('ringPctText').textContent = pct + '%';
+
+  const remEl = document.getElementById('heroRemain');
+  remEl.textContent = (remaining < 0 ? '-¥' : '¥') + Math.abs(remaining).toLocaleString();
+  remEl.className = 'hero-remain' + (remaining < 0 ? ' over' : '');
+  document.getElementById('heroSub2').textContent = remaining < 0 ? '⚠️ 已超支' : '剩余可支配';
+
+  document.getElementById('heroTotal').textContent  = '¥' + totalLimit.toLocaleString();
+  document.getElementById('heroSpent').textContent   = '¥' + totalSpent.toLocaleString();
+  const remStatEl = document.getElementById('heroRemStat');
+  remStatEl.textContent = (remaining < 0 ? '-¥' : '¥') + Math.abs(remaining).toLocaleString();
+  remStatEl.className = 'hero-stat-value ' + (remaining < 0 ? 'red' : 'green');
+
+  // Categories
+  const catList = document.getElementById('catList');
+  catList.innerHTML = '';
+  activeCats.forEach(c => {
+    const spent  = catSpent[c.name] || 0;
+    const pct2   = c.limit > 0 ? Math.min(100, Math.round(spent / c.limit * 100)) : 0;
+    const isOver = c.limit > 0 && spent > c.limit;
+    const meta   = CAT_META[c.name] || { color: '#6366f1', bg: '#12122a', icon: '📦' };
+    const overInfo = isOver
+      ? `超¥${(spent - c.limit).toLocaleString()}`
+      : `剩¥${(c.limit - spent).toLocaleString()}`;
+
+    catList.innerHTML += `
+      <div class="cat-card">
+        <div class="cat-row">
+          <div class="cat-left">
+            <div class="cat-icon-circle" style="background:${meta.bg}">${meta.icon}</div>
+            <div>
+              <div class="cat-name">${c.name}</div>
+              <div class="cat-limit">预算 ¥${c.limit.toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="cat-right">
+            <div class="cat-spent${isOver ? ' over' : ''}">¥${spent.toLocaleString()}</div>
+            <div class="cat-status">${overInfo}</div>
+          </div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${pct2}%;background:${meta.color}"></div>
+        </div>
+      </div>`;
+  });
+
+  // Transactions
+  const txns = (d.expenses || []).slice(-8).reverse();
+  const txnList = document.getElementById('txnList');
+  if (txns.length === 0) {
+    txnList.innerHTML = '<div style="text-align:center;color:#444;padding:24px;font-size:13px">暂无消费记录</div>';
+  } else {
+    txnList.innerHTML = txns.map(e => {
+      const meta = CAT_META[e.category] || { color: '#6366f1', icon: '📦' };
+      return `<div class="txn-item">
+        <div class="txn-left">
+          <div class="txn-icon">${meta.icon}</div>
+          <div>
+            <div class="txn-cat">${e.category}</div>
+            ${e.note ? `<div class="txn-note">${e.note}</div>` : ''}
+          </div>
+        </div>
+        <div class="txn-right">
+          <div class="txn-amount">-¥${e.amount.toLocaleString()}</div>
+          <div class="txn-time">${(e.date || '').slice(-5)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Auto-refresh every 5 min
+  setTimeout(load, 5 * 60 * 1000);
+}
+
+load();
+</script>
+</body>
+</html>

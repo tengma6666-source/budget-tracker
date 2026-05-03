@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>助手状态面板</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:#090914;color:#fff;min-height:100vh;width:480px;margin:0 auto;padding-bottom:24px}
+.hdr{background:#090914;padding:28px 24px 20px;border-bottom:1px solid #1c1c38}
+.card{background:#12122a;margin:14px 16px;border-radius:16px;padding:18px 20px}
+.card-title{font-size:11px;color:#555;letter-spacing:2px;margin-bottom:14px;text-transform:uppercase}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1c1c38}
+.row:last-child{border-bottom:none}
+.lbl{font-size:13px;color:#888}
+.val{font-size:13px;font-weight:700}
+.ok{color:#4ade80}.err{color:#f87171}.warn{color:#fbbf24}.info{color:#74b3e0}
+.pbar{width:100%;height:4px;background:#1c1c38;border-radius:2px;margin-top:6px}
+.pfill{height:4px;border-radius:2px;transition:width .6s}
+.footer{text-align:center;padding:20px 24px;font-size:11px;color:#333}
+a{color:#74b3e0;text-decoration:none}
+.tag{padding:2px 8px;border-radius:10px;font-size:11px}
+.tag-ok{background:#1a2e1a;color:#4ade80}
+.tag-err{background:#2e1a1a;color:#f87171}
+.tag-warn{background:#2e2a1a;color:#fbbf24}
+.task-item{padding:5px 0;border-bottom:1px solid #1c1c38;font-size:12px;display:flex;justify-content:space-between;align-items:center}
+.task-item:last-child{border-bottom:none;padding-bottom:0}
+.task-lbl{flex:1;color:#888}
+.task-time{font-size:11px;color:#555;margin-left:8px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div style="font-size:22px;font-weight:700">助手状态面板</div>
+  <div style="font-size:11px;color:#555;margin-top:4px">OpenClaw · 实时 · 每30秒刷新</div>
+</div>
+
+<div class="card">
+  <div class="card-title">🤖 系统状态</div>
+  <div class="row"><span class="lbl">助手运行时</span><span class="val ok">✅ 正常</span></div>
+  <div class="row"><span class="lbl">默认模型</span><span class="val info">Minimax M2.7</span></div>
+  <div class="row"><span class="lbl">PPT/创意模型</span><span class="val info">GPT-5.4</span></div>
+</div>
+
+<div class="card">
+  <div class="card-title">🛠️ 关键服务</div>
+  <div class="row"><span class="lbl">HTTP 服务（8765）</span><span id="s-http">检查中...</span></div>
+  <div class="row"><span class="lbl">预算数据文件</span><span id="s-data">检查中...</span></div>
+  <div class="row"><span class="lbl">操作日志</span><span id="s-log">检查中...</span></div>
+</div>
+
+<div class="card">
+  <div class="card-title">📅 Cron 定时任务</div>
+  <div class="row"><span class="lbl">体育早报</span><span id="c-morning">—</span></div>
+  <div class="row"><span class="lbl">体育晚报</span><span id="c-evening">—</span></div>
+  <div class="row"><span class="lbl">预算早报</span><span id="c-budget">—</span></div>
+  <div class="row"><span class="lbl">AI News</span><span id="c-ai">—</span></div>
+  <div class="row"><span class="lbl">每周 Curator</span><span id="c-curator">—</span></div>
+</div>
+
+<div class="card">
+  <div class="card-title">✅ 最近成功（操作日志）</div>
+  <div id="success-list" style="font-size:12px;color:#555">加载中...</div>
+</div>
+
+<div class="card">
+  <div class="card-title">⚠️ 最近失败（操作日志）</div>
+  <div id="fail-list" style="font-size:12px;color:#555">加载中...</div>
+</div>
+
+<div class="card">
+  <div class="card-title">📁 预算追踪</div>
+  <div class="row"><span class="lbl">Dashboard</span><span class="val info"><a href="http://localhost:8765/dashboard.html">打开</a></span></div>
+  <div class="row"><span class="lbl">已消耗</span><span id="b-spent">—</span></div>
+  <div class="row"><span class="lbl">剩余</span><span id="b-rem">—</span></div>
+  <div class="row"><span class="lbl">进度</span><span id="b-pct">—</span></div>
+  <div class="pbar"><div id="b-bar" style="width:0%;height:4px;background:#22d3ee;border-radius:2px;transition:width .6s"></div></div>
+</div>
+
+<div class="card">
+  <div class="card-title">🧠 Hermes 架构启发（优化进度）</div>
+  <div class="row"><span class="lbl">记忆治理</span><span class="val ok">✅ 已有框架</span></div>
+  <div class="row"><span class="lbl">技能成长</span><span class="val ok">✅ Skill Map 已建立</span></div>
+  <div class="row"><span class="lbl">Curator 机制</span><span class="val ok">✅ 每周六21:00</span></div>
+  <div class="row"><span class="lbl">结果校验</span><span class="val ok">✅ task-verify.js 已部署</span></div>
+  <div class="row"><span class="lbl">助手状态面板</span><span class="val ok">✅ 成功/失败总览</span></div>
+</div>
+
+<div class="footer">最后刷新: <span id="ts">—</span></div>
+
+<script>
+function gid(id){return document.getElementById(id)}
+
+function req(url, ms){
+  return new Promise(function(res){
+    var x = new XMLHttpRequest();
+    x.open('GET', url, true);
+    x.onerror = function(){ clearTimeout(t); res(false); };
+    x.onload = function(){ clearTimeout(t); res(x.status < 400); };
+    var t = setTimeout(function(){ x.abort(); res(false); }, ms || 3000);
+    x.send();
+  });
+}
+
+function parseOps(text){
+  var lines = text.split('\n').filter(function(l){ return l.indexOf('|') > 0 && l.trim().length > 5; });
+  var okLines = lines.filter(function(l){ return l.indexOf('| OK') > 0 || l.indexOf('| DONE') > 0 || l.indexOf('| FIXED') > 0; }).slice(-10).reverse();
+  var failLines = lines.filter(function(l){ return l.indexOf('| FAIL') > 0 || l.indexOf('| ERROR') > 0; }).slice(-10).reverse();
+  return { ok: okLines, fail: failLines };
+}
+
+function fmtLine(l, cls){
+  var p = l.split('|').map(function(x){ return x.trim(); });
+  var ts = p[0] || '';
+  var op = p[1] || '';
+  var status = (p[5] || p[4] || '').replace(/^WARN$/, 'WARN');
+  return '<div class="task-item"><span class="task-lbl">' + op + ' <span class="tag ' + cls + '">' + status + '</span></span><span class="task-time">' + ts + '</span></div>';
+}
+
+function emptyDiv(msg, color){
+  return '<div style="color:' + color + ';font-size:12px">' + msg + '</div>';
+}
+
+async function init(){
+  // HTTP 8765
+  var hp = await req('http://localhost:8765/');
+  gid('s-http').innerHTML = hp
+    ? '<span class="val ok">✅ 运行中</span>'
+    : '<span class="val err">❌ 离线</span>';
+
+  // 预算数据
+  var dp = await req('budget-data.json');
+  gid('s-data').innerHTML = dp
+    ? '<span class="val ok">✅ 存在</span>'
+    : '<span class="val err">❌ 缺失</span>';
+
+  if(dp){
+    try {
+      var xr = new XMLHttpRequest();
+      xr.open('GET', 'budget-data.json', true);
+      xr.onload = function(){
+        if(xr.status < 400){
+          var d = JSON.parse(xr.responseText);
+          var cats = {};
+          (d.expenses||[]).forEach(function(e){ cats[e.category] = (cats[e.category]||0) + e.amount; });
+          var total = d.totalBudget||0;
+          var spent = Object.values(cats).reduce(function(s,v){ return s+v; }, 0)||0;
+          var rem = total - spent;
+          var pct = total > 0 ? Math.min(100, Math.round(spent/total*100)) : 0;
+          gid('b-spent').textContent = '¥'+spent.toLocaleString();
+          gid('b-rem').textContent = '¥'+rem.toLocaleString();
+          gid('b-rem').className = 'val ' + (rem < 0 ? 'err' : 'ok');
+          gid('b-pct').textContent = pct+'%';
+          var bar = gid('b-bar');
+          bar.style.width = pct+'%';
+          bar.style.background = rem < 0 ? '#f87171' : '#22d3ee';
+        }
+      };
+      xr.send();
+    } catch(e){}
+  }
+
+  // ops log
+  var lp = await req('budget-tracker/budget-ops.log.md');
+  gid('s-log').innerHTML = lp
+    ? '<span class="val ok">✅ 存在</span>'
+    : '<span class="val warn">⚠️ 暂无日志</span>';
+
+  if(lp){
+    try {
+      var xr2 = new XMLHttpRequest();
+      xr2.open('GET', 'budget-tracker/budget-ops.log.md', true);
+      xr2.onload = function(){
+        if(xr2.status < 400){
+          var parsed = parseOps(xr2.responseText);
+          gid('success-list').innerHTML = parsed.ok.length === 0
+            ? emptyDiv('暂无成功记录', '#4ade80')
+            : parsed.ok.map(function(l){ return fmtLine(l, 'tag-ok'); }).join('');
+          gid('fail-list').innerHTML = parsed.fail.length === 0
+            ? emptyDiv('近10条均无失败 ✅', '#4ade80')
+            : parsed.fail.map(function(l){ return fmtLine(l, 'tag-err'); }).join('');
+        } else {
+          gid('success-list').innerHTML = emptyDiv('日志读取失败', '#f87171');
+          gid('fail-list').innerHTML = emptyDiv('日志读取失败', '#f87171');
+        }
+      };
+      xr2.onerror = function(){
+        gid('success-list').innerHTML = emptyDiv('日志读取失败', '#f87171');
+        gid('fail-list').innerHTML = emptyDiv('日志读取失败', '#f87171');
+      };
+      xr2.send();
+    } catch(e){
+      gid('success-list').innerHTML = emptyDiv('日志读取失败', '#f87171');
+      gid('fail-list').innerHTML = emptyDiv('日志读取失败', '#f87171');
+    }
+  } else {
+    gid('success-list').innerHTML = emptyDiv('日志暂无', '#555');
+    gid('fail-list').innerHTML = emptyDiv('日志暂无', '#555');
+  }
+
+  gid('ts').textContent = new Date().toLocaleTimeString('zh-CN');
+}
+
+init();
+setInterval(init, 30000);
+</script>
+</body>
+</html>

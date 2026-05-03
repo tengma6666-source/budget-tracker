@@ -1,0 +1,45 @@
+{
+  "totalBudget": 10000,
+  "resetDay": 1,
+  "categories": [
+    {
+      "name": "个人爱好",
+      "limit": 4000
+    },
+    {
+      "name": "好物购买",
+      "limit": 3000
+    },
+    {
+      "name": "鞋品",
+      "limit": 1000
+    },
+    {
+      "name": "家庭幸福感好物",
+      "limit": 2000
+    }
+  ],
+  "expenses": [
+    {
+      "id": 1,
+      "date": "2026-05-01 23:00",
+      "category": "好物购买",
+      "amount": 1998,
+      "note": "千问G1 AI眼镜"
+    },
+    {
+      "id": 2,
+      "date": "2026-05-02 10:17",
+      "category": "好物购买",
+      "amount": 258,
+      "note": "Torras手机壳"
+    },
+    {
+      "id": 3,
+      "date": "2026-05-02 13:11",
+      "category": "个人爱好",
+      "amount": 525,
+      "note": "日常消费"
+    }
+  ]
+}

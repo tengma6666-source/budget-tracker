@@ -1,0 +1,23 @@
+{
+  "_note": "预算参考配置 — 勿删勿改",
+  "totalBudget": 10000,
+  "resetDay": 1,
+  "categories": [
+    {
+      "name": "个人爱好",
+      "limit": 4000
+    },
+    {
+      "name": "好物购买",
+      "limit": 3000
+    },
+    {
+      "name": "鞋品",
+      "limit": 1000
+    },
+    {
+      "name": "家庭幸福感好物",
+      "limit": 2000
+    }
+  ]
+}

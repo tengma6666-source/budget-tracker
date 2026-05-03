@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>轻记·5月预算</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: #0a0a14;
+    color: #fff;
+    min-height: 100vh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  /* ── Page wrapper ── */
+  .page { max-width: 480px; margin: 0 auto; padding: 0 0 100px; }
+
+  /* ── Header ── */
+  .header {
+    background: #0a0a14;
+    padding: 16px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid #1a1a30;
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: center; }
+  .header-month { font-size: 11px; color: #555; letter-spacing: 2px; }
+  .header-title { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  .header-badge { font-size: 10px; background: #1c1c38; color: #6366f1; padding: 3px 8px; border-radius: 20px; }
+
+  /* ── Ring Card ── */
+  .ring-card {
+    background: #12122a;
+    margin: 16px 16px 12px;
+    border-radius: 24px;
+    padding: 28px 24px 24px;
+    text-align: center;
+  }
+  .ring-wrap { position: relative; width: 180px; height: 180px; margin: 0 auto 20px; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: #1e1e40; stroke-width: 14; }
+  .ring-fill {
+    fill: none; stroke-width: 14; stroke-linecap: round;
+    transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .ring-center {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .ring-pct { font-size: 40px; font-weight: 800; line-height: 1; }
+  .ring-pct-label { font-size: 12px; color: #555; margin-top: 4px; letter-spacing: 1px; }
+
+  .budget-nums { display: flex; justify-content: space-around; margin-top: 8px; }
+  .budget-num-item { text-align: center; }
+  .budget-num-label { font-size: 11px; color: #555; letter-spacing: 1px; margin-bottom: 4px; }
+  .budget-num-value { font-size: 20px; font-weight: 700; }
+  .budget-num-value.green { color: #4ade80; }
+  .budget-num-value.red { color: #f87171; }
+  .budget-num-value.gray { color: #888; }
+
+  /* ── Category Cards ── */
+  .section-title {
+    font-size: 11px; color: #444; letter-spacing: 2px;
+    text-transform: uppercase; padding: 8px 20px 6px;
+  }
+  .cat-card {
+    background: #12122a;
+    margin: 0 16px 10px;
+    border-radius: 18px;
+    padding: 18px 20px;
+  }
+  .cat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .cat-left { display: flex; align-items: center; gap: 10px; }
+  .cat-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .cat-name { font-size: 16px; font-weight: 600; }
+  .cat-limit { font-size: 12px; color: #555; margin-top: 2px; }
+  .cat-right { text-align: right; }
+  .cat-spent { font-size: 18px; font-weight: 700; }
+  .cat-spent.ok { color: #fff; }
+  .cat-spent.warn { color: #fbbf24; }
+  .cat-spent.over { color: #f87171; }
+  .cat-remaining { font-size: 12px; margin-top: 2px; }
+  .cat-remaining.ok { color: #4ade80; }
+  .cat-remaining.over { color: #f87171; }
+
+  .cat-bar { height: 8px; background: #1e1e40; border-radius: 4px; overflow: hidden; }
+  .cat-bar-fill {
+    height: 100%; border-radius: 4px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* ── Recent ── */
+  .recent-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #1a1a35;
+  }
+  .recent-item:last-child { border-bottom: none; }
+  .recent-left { display: flex; align-items: center; gap: 12px; }
+  .recent-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .recent-cat { font-size: 15px; font-weight: 600; }
+  .recent-note { font-size: 12px; color: #555; margin-top: 2px; }
+  .recent-right { text-align: right; }
+  .recent-amount { font-size: 16px; font-weight: 700; }
+  .recent-time { font-size: 11px; color: #444; margin-top: 2px; }
+
+  /* ── Empty ── */
+  .empty { text-align: center; padding: 32px 0; color: #333; font-size: 14px; }
+
+  /* ── Floating add button ── */
+  .fab {
+    position: fixed;
+    bottom: calc(32px + env(safe-area-inset-bottom));
+    right: 24px;
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    z-index: 100;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="header-month">2026年5月</div>
+        <div class="header-title">📚 小马哥阅读开趣开销预算跟踪</div>
+      </div>
+      <div class="header-badge">轻记</div>
+    </div>
+  </div>
+
+  <!-- Ring -->
+  <div class="ring-card">
+    <div class="ring-wrap">
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <circle class="ring-bg" cx="90" cy="90" r="76"/>
+        <circle class="ring-fill" cx="90" cy="90" r="76"
+          stroke-dasharray="477.52"
+          stroke-dashoffset="477.52"
+          id="mainRing"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-pct" id="mainPct">0%</div>
+        <div class="ring-pct-label">已消耗</div>
+      </div>
+    </div>
+    <div class="budget-nums">
+      <div class="budget-num-item">
+        <div class="budget-num-label">总预算</div>
+        <div class="budget-num-value gray" id="totalBudget">¥0</div>
+      </div>
+      <div class="budget-num-item">
+        <div class="budget-num-label">已消耗</div>
+        <div class="budget-num-value" id="totalSpent">¥0</div>
+      </div>
+      <div class="budget-num-item">
+        <div class="budget-num-label">剩余</div>
+        <div class="budget-num-value green" id="remainLabel">¥0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories -->
+  <div class="section-title">📂 分类</div>
+  <div id="cats"></div>
+
+  <!-- Recent -->
+  <div class="section-title">🧾 最近记账</div>
+  <div class="cat-card" style="padding: 8px 20px">
+    <div id="recent"></div>
+  </div>
+
+</div>
+
+<div class="fab" id="fab" title="记账">+</div>
+
+<script>
+const FALLBACK = {
+  categories: [
+    { name: "个人爱好", limit: 4000, spent: 0 },
+    { name: "好物购买", limit: 3000, spent: 0 },
+    { name: "鞋品", limit: 1000, spent: 0 }
+  ],
+  expenses: []
+};
+
+const CAT_META = {
+  '鞋品':        { color: '#f97316', bg: '#1f1208', icon: '👟' },
+  '个人爱好':    { color: '#a78bfa', bg: '#120f1f', icon: '🎮' },
+  '好物购买':    { color: '#22d3ee', bg: '#081820', icon: '🛍️' },
+  '餐饮':        { color: '#fbbf24', bg: '#1f1a08', icon: '🍜' },
+  '活动聚会':    { color: '#f472b6', bg: '#1f0c18', icon: '🥂' },
+  '交通':        { color: '#60a5fa', bg: '#0c1020', icon: '🚗' },
+  '其他':        { color: '#4b5563', bg: '#111', icon: '📦' }
+};
+
+function meta(name) { return CAT_META[name] || { color: '#6366f1', bg: '#111', icon: '📦' }; }
+
+function pctColor(pct, isOver) {
+  if (isOver) return '#f87171';
+  if (pct >= 80) return '#fbbf24';
+  return '#6366f1';
+}
+
+function cls(spent, limit) {
+  if (limit === 0) return 'ok';
+  if (spent > limit) return 'over';
+  if (spent / limit >= 0.7) return 'warn';
+  return 'ok';
+}
+
+function render(d) {
+  const cats = (d.categories || FALLBACK.categories).map(c => ({
+    ...c, spent: 0, ...d.categories?.find(x => x.name === c.name)
+  }));
+
+  // Compute spent from expenses
+  const catSpent = {};
+  (d.expenses || []).forEach(e => { catSpent[e.category] = (catSpent[e.category] || 0) + e.amount; });
+
+  const active = cats
+    .map(c => ({ ...c, spent: catSpent[c.name] || 0 }))
+    .filter(c => c.limit > 0 || c.spent > 0)
+    .sort((a, b) => (b.spent / (b.limit || 1)) - (a.spent / (a.limit || 1)));
+
+  const totalLimit = active.reduce((s, c) => s + c.limit, 0);
+  const totalSpent = active.reduce((s, c) => s + c.spent, 0);
+  const remaining = totalLimit - totalSpent;
+  const pct = totalLimit > 0 ? Math.min(100, Math.round(totalSpent / totalLimit * 100)) : 0;
+  const isOver = totalSpent > totalLimit && totalLimit > 0;
+  const circumference = 2 * Math.PI * 76;
+
+  // Ring
+  const ring = document.getElementById('mainRing');
+  ring.style.strokeDashoffset = circumference * (1 - pct / 100);
+  ring.style.stroke = isOver ? '#f87171' : '#6366f1';
+  document.getElementById('mainPct').textContent = pct + '%';
+  document.getElementById('mainPct').style.color = isOver ? '#f87171' : '#fff';
+  document.getElementById('totalBudget').textContent = '¥' + totalLimit.toLocaleString();
+  document.getElementById('totalSpent').textContent = '¥' + totalSpent.toLocaleString();
+  const remEl = document.getElementById('remainLabel');
+  if (remaining < 0) {
+    remEl.textContent = '-¥' + Math.abs(remaining).toLocaleString();
+    remEl.className = 'budget-num-value red';
+  } else {
+    remEl.textContent = '¥' + remaining.toLocaleString();
+    remEl.className = 'budget-num-value green';
+  }
+
+  // Categories
+  document.getElementById('cats').innerHTML = active.length === 0
+    ? '<div class="cat-card"><div class="empty">还没有设置预算分类</div></div>'
+    : active.map(c => {
+      const m = meta(c.name);
+      const pct2 = c.limit > 0 ? Math.min(100, Math.round(c.spent / c.limit * 100)) : 0;
+      const isCatOver = c.spent > c.limit && c.limit > 0;
+      const cc = isCatOver ? '#f87171' : (c.limit > 0 ? m.color : '#555');
+      const ccls = cls(c.spent, c.limit);
+      const rem = c.limit - c.spent;
+      return `
+        <div class="cat-card">
+          <div class="cat-header">
+            <div class="cat-left">
+              <div class="cat-icon" style="background:${m.bg}">${m.icon}</div>
+              <div>
+                <div class="cat-name">${c.name}</div>
+                <div class="cat-limit">${c.limit > 0 ? '预算 ¥' + c.limit.toLocaleString() : '无上限'}</div>
+              </div>
+            </div>
+            <div class="cat-right">
+              <div class="cat-spent ${ccls}">¥${c.spent.toLocaleString()}</div>
+              <div class="cat-remaining ${isCatOver ? 'over' : 'ok'}">
+                ${isCatOver ? '超¥' + Math.abs(rem).toLocaleString() : '剩¥' + Math.max(0, rem).toLocaleString()}
+              </div>
+            </div>
+          </div>
+          <div class="cat-bar">
+            <div class="cat-bar-fill" style="width:${pct2}%;background:${cc};opacity:${isCatOver?1:0.8}"></div>
+          </div>
+        </div>`;
+    }).join('');
+
+  // Recent
+  const recent = (d.expenses || []).slice(-5).reverse();
+  document.getElementById('recent').innerHTML = recent.length === 0
+    ? '<div class="empty">还没有记账记录</div>'
+    : recent.map(e => {
+      const m = meta(e.category);
+      const t = e.date ? e.date.slice(-5) : '';
+      return `
+        <div class="recent-item">
+          <div class="recent-left">
+            <div class="recent-icon" style="background:${m.bg}">${m.icon}</div>
+            <div>
+              <div class="recent-cat">${e.category}</div>
+              <div class="recent-note">${e.note || ''}</div>
+            </div>
+          </div>
+          <div class="recent-right">
+            <div class="recent-amount">-¥${e.amount.toLocaleString()}</div>
+            <div class="recent-time">${t}</div>
+          </div>
+        </div>`;
+    }).join('');
+}
+
+fetch('budget-data.json')
+  .then(r => r.json())
+  .then(d => render(d))
+  .catch(() => render(FALLBACK));
+</script>
+</body>
+</html>
