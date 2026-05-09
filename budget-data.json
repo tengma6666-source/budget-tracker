@@ -1,5 +1,5 @@
 {
-  "totalBudget": 13000,
+  "totalBudget": 10000,
   "resetDay": 1,
   "categories": [
     {
@@ -15,12 +15,8 @@
       "limit": 1000
     },
     {
-      "name": "家居好物",
+      "name": "家庭幸福感好物",
       "limit": 2000
-    },
-    {
-      "name": "家人幸福感开销",
-      "limit": 3000
     }
   ],
   "expenses": [
@@ -49,13 +45,15 @@
       "category": "个人爱好",
       "amount": 1,
       "date": "2026-05-04",
-      "note": "测试"
+      "note": "测试",
+      "id": 13
     },
     {
       "category": "鞋品",
       "amount": 1,
       "date": "2026-05-04",
-      "note": "记录"
+      "note": "记录",
+      "id": 14
     },
     {
       "id": 6,
@@ -98,6 +96,20 @@
       "category": "个人爱好",
       "amount": 600,
       "note": "个人爱好 600"
+    },
+    {
+      "id": 12,
+      "date": "2026-05-08 23:39",
+      "category": "个人爱好",
+      "amount": 100,
+      "note": "个人爱好 100"
+    },
+    {
+      "id": 15,
+      "date": "2026-05-10 06:56",
+      "category": "个人爱好",
+      "amount": 200,
+      "note": ""
     }
   ]
 }
