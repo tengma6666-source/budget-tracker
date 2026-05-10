@@ -63,13 +63,16 @@ def validate_data():
             bak = DATA_FILE + '.bak.' + datetime.now().strftime('%Y%m%d%H%M%S')
             shutil.copy2(DATA_FILE, bak)
             log_op('VALIDATE_FAIL', '', 0, '', 'FIXED', 'issues={} bak={}'.format(issues, bak))
-            data['totalBudget'] = ref.get('totalBudget')
-            data['resetDay'] = ref.get('resetDay', 1)
-            data['categories'] = [dict(c) for c in ref.get('categories', [])]
+            # FIX: update REF to match DATA (data is source of truth), don't overwrite data with stale ref
+            ref['totalBudget'] = data.get('totalBudget')
+            ref['resetDay'] = data.get('resetDay', 1)
+            ref['categories'] = [dict(c) for c in data.get('categories', [])]
+            with open(REF_FILE, 'w') as f:
+                json.dump(ref, f, indent=2, ensure_ascii=False)
             with open(DATA_FILE, 'w') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
-            log_op('VALIDATE_FIX', '', 0, '', 'DONE', 'bak={}'.format(bak))
-            print('[W] Data auto-fixed, backup: {}'.format(os.path.basename(bak)))
+            log_op('VALIDATE_FIX', '', 0, '', 'DONE', 'ref updated from data, bak={}'.format(bak))
+            print('[W] Config auto-fixed (ref updated from data), backup: {}'.format(os.path.basename(bak)))
             return data
         return data
     except Exception as e:
@@ -98,7 +101,7 @@ def main():
     if category not in valid_cats:
         print('[W] Category "{}" not in known list'.format(category))
 
-    all_ids = [e['id'] for e in data.get('expenses', [])]
+    all_ids = [e.get('id', 0) for e in data.get('expenses', [])]
     new_id = (max(all_ids) if all_ids else 0) + 1
     ts = time.strftime('%Y-%m-%d %H:%M')
 
