@@ -1,6 +1,6 @@
 {
   "_note": "预算参考配置 — 勿删勿改",
-  "totalBudget": 10000,
+  "totalBudget": 13000,
   "resetDay": 1,
   "categories": [
     {
@@ -18,6 +18,10 @@
     {
       "name": "家庭幸福感好物",
       "limit": 2000
+    },
+    {
+      "name": "家人幸福感开销",
+      "limit": 3000
     }
   ]
 }
